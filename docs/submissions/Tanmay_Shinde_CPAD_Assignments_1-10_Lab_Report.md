@@ -1,427 +1,549 @@
-# CPAD Laboratory Report — Assignments 1–10
+# MIT ART, DESIGN AND TECHNOLOGY UNIVERSITY  
+## MIT School of Computing, Pune  
+### Department of Information Technology
 
-**Student:** Tanmay Shinde  
-**Programme:** B.Tech (Information Technology) · MIT ADT University, Pune  
-**Subject:** Cross-Platform Application Development (CPAD)  
-**Project:** TanmayPortfolio — React Native Developer Portfolio  
-**Repository:** https://github.com/tanmays0/TanmayPortfolio  
-**Runtime:** Android emulator (Pixel) via React Native Community CLI + Android Studio  
+**Course:** Cross Platform App Development (CPAD)  
+**ASSIGNMENT REPORT — Assignments 1 to 10**  
+**React Native Developer Portfolio (TanmayPortfolio)**
+
+| Field | Detail |
+| --- | --- |
+| Student Name | Tanmay Shinde |
+| Enrollment Number | ADT23SOCB1617 |
+| Roll No. / Division | 12 / LY-SMAD |
+| Program | B.Tech Information Technology |
+| Year | Final Year (LY) |
+| Course Faculty | Prof. Rohini Bhosale |
+| Academic Year | 2026–27 |
+| Repository | https://github.com/tanmays0/TanmayPortfolio |
 
 ---
 
 ## Declaration
 
-This report documents how a single React Native portfolio application satisfies Laboratory Assignments **1 through 10**. Theory for each assignment is followed by implementation evidence and screenshots from the running app.
+I, Tanmay Shinde, a student of B.Tech Information Technology (Enrollment No. ADT23SOCB1617, Roll No. 12, Division LY-SMAD), declare that this report and the accompanying project, **TanmayPortfolio**, are my own work, completed for Assignments **1 to 10** of the Cross Platform App Development (CPAD) course. The application was built with React Native (Community CLI) and executed on the Pixel Android emulator. All screenshots in this report were captured from that running application.
 
-**Note on tooling:** The Assignment 1 brief mentions Expo CLI. This project was created with the **React Native Community CLI**, which also creates a React Native project, runs on an emulator, and additionally provides a native `android/` folder openable in Android Studio. All functional requirements of Assignment 1 are met.
-
----
-
-## Status overview
-
-| Assignment | Title | COs | Status |
-| --- | --- | --- | --- |
-| 1 | RN setup + Hello World on emulator | CO1, CO2 | Done |
-| 2 | Native vs Hybrid vs React Native comparison | CO1 | Done |
-| 3 | Functional components, Props, `useState` | CO2, CO3 | Done |
-| 4 | Project structure + reusable components + state | CO2, CO3 | Done |
-| 5 | Student Profile — core RN components | CO3 | Done |
-| 6 | Flexbox, TextInput, Button `onPress`, Alert | CO3, CO4 | Done |
-| 7 | Multi-screen Stack Navigation | CO4 | Done |
-| 8 | Local JSON + FlatList | CO5 | Done |
-| 9 | Student Portfolio Application | CO3, CO4, CO5 | Done |
-| 10 | Personal Portfolio Application | CO1–CO5 | Done |
+**Student Name:** Tanmay Shinde  
+**Enrollment Number:** ADT23SOCB1617  
+**Signature:** ______________________
 
 ---
 
-# Assignment 1 — Setup and Hello World
+## Table of Contents
+
+1. Introduction and Project Overview  
+2. Assignment 1: Setup and Hello World  
+3. Assignment 2: Native vs Hybrid vs React Native  
+4. Assignment 3: Components, Props and useState  
+5. Assignment 4: Folder Structure and State  
+6. Assignment 5: Student Profile App with Core Components  
+7. Assignment 6: Flexbox, TextInput and onPress  
+8. Assignment 7: Multi-Screen Stack Navigation  
+9. Assignment 8: Dynamic Data Rendering with FlatList  
+10. Assignment 9: Student Portfolio Application  
+11. Assignment 10: Personal Portfolio Application  
+12. Rubric Alignment  
+13. Conclusion  
+
+---
+
+# 1. Introduction and Project Overview
+
+This report documents the work completed for Assignments **1 to 10** of the Cross Platform App Development (CPAD) course. Instead of building ten unrelated exercises, each assignment is implemented as part of **one** application: a React Native developer portfolio named **TanmayPortfolio**.
+
+The app contains Home, About, Skills, Projects, Experience, Certifications, Resume and Contact screens. It is used throughout this report to demonstrate every concept in the laboratory brief.
+
+### 1.1 Technology used
+
+| Item | Detail |
+| --- | --- |
+| Framework | React Native 0.87 with TypeScript |
+| Project creation | React Native Community CLI (real `android/` Gradle project, not Expo Go) |
+| Run target | Pixel Android emulator |
+| Tooling | Community CLI, Metro bundler and Android Studio |
+| Navigation | React Navigation — native Stack Navigator |
+
+**Note on Expo vs Community CLI:** The Assignment 1 brief mentions Expo CLI. This project uses the **Community CLI**, which also creates a React Native project and runs on an emulator, and additionally provides a native `android/` folder that opens in Android Studio—matching the lab demo workflow.
+
+### 1.2 Assignment mapping
+
+| Assignment | Topic | Where it is shown in the project |
+| --- | --- | --- |
+| 1 | Setup + Hello World | Community CLI project, `android/` folder, first emulator run |
+| 2 | Comparison report | Native vs Hybrid vs React Native, and why RN was chosen |
+| 3 | Components, Props, useState | `src/components`, ProjectCard props, theme and form state |
+| 4 | Folder structure + state | Documented `src/` tree, Switch and validation updates |
+| 5 | Profile app + core components | View, Text, Image, TextInput, Button, Switch, ScrollView |
+| 6 | Flexbox, TextInput, onPress | Skill wrap, contact inputs, Submit handler, Alert |
+| 7 | Stack Navigation | `AppNavigator`, Home / About / Contact and other routes |
+| 8 | JSON + FlatList | `projects.json`, `ProjectsScreen` FlatList |
+| 9 | Student Portfolio | Full multi-screen portfolio product |
+| 10 | Personal Portfolio | Capstone covering CO1–CO5 in one app |
+
+---
+
+# 2. Assignment 1: Setup and Hello World
 
 **COs:** CO1, CO2
 
-## Theory
+### 2.1 Aim
 
-React Native lets you build mobile UIs with JavaScript/TypeScript and React. The Community CLI scaffolds a project with:
+To show that the project is a real React Native Community CLI application that installs and runs on the Android emulator.
 
-- A JavaScript entry (`index.js`) registered with the native host
-- Metro bundler for JS packaging and Fast Refresh
-- Native folders `android/` and `ios/` for platform builds
+### 2.2 Theory
 
-A first milestone is a “Hello World” screen that proves Metro, the native shell, and the emulator can install and run the app.
+React Native is a framework for building mobile user interfaces with JavaScript or TypeScript and the React component model. A Community CLI project includes:
 
-## Tasks completed
+1. A JavaScript entry file (`index.js`) registered with the native host through `AppRegistry`.  
+2. **Metro**, the bundler that packages JavaScript and supports Fast Refresh during development.  
+3. Native project folders (`android/` and `ios/`) that build platform APKs / apps.
 
-| Task | How it was done |
-| --- | --- |
-| Create RN project | `TanmayPortfolio` root; `package.json` declares `react-native` `0.87.1` |
-| Run on emulator | `npm run android` / Android Studio Run on Pixel emulator |
-| Basic first app | Early Hello World stage; app now hosts the full portfolio |
+The first academic milestone is a **Hello World** screen: a minimal UI that proves Metro, the native shell, and the emulator can install and display the app. Later screens replace Hello World without changing the project creation path.
 
-## Evidence / screenshots
+### 2.3 Steps performed
 
-![Assignment 1 — first running build](../screenshots/assignment-1/01-home-hello-portfolio.png)
+- Create the project with Community CLI. The project root is `TanmayPortfolio` and `package.json` lists `react-native` 0.87.1.  
+- Open `android/` in Android Studio. The Gradle project is opened in Android Studio, rather than using Expo Go.  
+- Run on the emulator with `npm run android`, or with Run in Android Studio.  
+- The same CLI app that first displayed Hello World now hosts the complete portfolio.
 
-**Demo tip:** Mention CLI init → Metro → first successful emulator install. Open `android/` in Android Studio and show Logcat if asked.
+### 2.4 Explanation
+
+The Community CLI was used so that the project contains a real `android/` folder. Metro bundles the JavaScript, and Android Studio installs the APK on the emulator. The first milestone was Hello World; the same application now hosts the full portfolio.
+
+### 2.5 Output
+
+![Figure 1: Portfolio Home screen running on the emulator](../screenshots/assignment-1/01-home-hello-portfolio.png)
 
 ---
 
-# Assignment 2 — Comparative Study (Native, Hybrid, React Native)
+# 3. Assignment 2: Native vs Hybrid vs React Native
 
 **COs:** CO1
 
-## Theory
+### 3.1 Aim
 
-### Native
+To compare three ways of building a mobile app for the same product goal, and to justify the choice made for this project. React Native sits in the middle: shared JavaScript with real native views.
 
-Apps written with platform SDKs (Kotlin/Java + Android SDK; Swift + UIKit/SwiftUI). Best performance and deepest OS access; separate codebases per platform.
+### 3.2 Theory
 
-### Hybrid (WebView)
+**Native development** uses platform SDKs and languages (Kotlin/Java on Android; Swift on iOS). Each platform is a separate codebase with full access to device APIs. Performance and OS integration are strongest, but cost and maintenance rise when the same product must ship on two platforms.
 
-A web app (HTML/CSS/JS) wrapped in a native WebView shell. High code reuse for content apps; often weaker gestures and “web-like” feel.
+**Hybrid (WebView-based) development** wraps a web application (HTML, CSS, JavaScript) inside a native WebView shell. Teams reuse web skills quickly. The UI is largely rendered by a browser engine, so complex gestures and native look-and-feel can be weaker than true native widgets.
 
-### React Native
+**React Native** is a cross-platform framework where UI is written in JavaScript/TypeScript with React. React Native bridges to **real native views** (`View`, `Text`, and so on) on Android and iOS—not a full-page WebView. One shared codebase can target both platforms while still teaching React concepts required by this course.
 
-One React/TypeScript codebase that renders **real native views** (`View`, `Text`, …) via a bridge — not a full-page WebView. Strong fit for shared UI products and academic React curricula.
+### 3.3 Comparison
 
-## Feature comparison
-
-| Feature | Native | Hybrid | React Native |
+| Aspect | Native | Hybrid (WebView) | React Native |
 | --- | --- | --- | --- |
-| Languages | Kotlin / Swift | HTML / CSS / JS | JS / TypeScript + React |
-| UI rendering | Native widgets | WebView | Native widgets via bridge |
-| Performance | Excellent | Often weaker | Near-native for most apps |
-| Code sharing | Low | High | High |
-| Tooling | Studio / Xcode | Web + shell | Metro + Studio / Xcode |
+| Approach | Kotlin / Swift + platform SDKs | HTML / CSS / JS in a WebView | TypeScript + React to native views |
+| Strength | Best performance and OS APIs | Fastest reuse of a website | One UI codebase, Metro Fast Refresh |
+| Trade-off | Two codebases to maintain | Weaker gestures and native feel | Needs some Gradle / native tooling |
+| Best suited to | Banking, games, camera-heavy apps | News, brochure, simple forms | This portfolio, product UIs, SaaS |
 
-## Advantages / limitations / use cases
+### 3.4 Why React Native for this project
 
-- **Native** — best for banking, games, deep hardware; costly dual codebases  
-- **Hybrid** — fastest web reuse; weaker native feel  
-- **React Native** — portfolios, SaaS clients, cross-platform product UI; occasional native modules needed  
+1. **Curriculum fit.** Functional components, Props, `useState`, core React Native widgets and Flexbox are the language of the assignment list.  
+2. **Studio workflow.** Community CLI ships the `android/` folder. It opens in Android Studio, runs on the emulator and shows Logcat.  
+3. **One codebase.** A full student profile (Home to Contact) is built without separate Kotlin and Swift apps.  
+4. **Industry signal.** React Native is widely used for cross-platform product UI.
 
-## Why React Native for this project
+### 3.5 Conclusion of comparison
 
-Curriculum maps to components, Props, `useState`, core widgets, Flexbox, and navigation. Community CLI gives a real `android/` Studio workflow. One codebase covers the full student portfolio.
+Native wins on raw performance, Hybrid wins on web reuse, and React Native is the best fit for this course and this project.
 
-**Detailed write-up:** [`../assignment-2-comparison-report.md`](../assignment-2-comparison-report.md)
+*Detailed write-up also available in `docs/assignment-2-comparison-report.md`.*
 
 ---
 
-# Assignment 3 — Functional Components, Props, and State
+# 4. Assignment 3: Components, Props and useState
 
 **COs:** CO2, CO3
 
-## Theory
+### 4.1 Aim
 
-- **Functional components** are JavaScript functions that return UI.  
-- **Props** pass data from parent → child (read-only for the child).  
-- **`useState`** stores values that change over time; updating state re-renders the component.
+To build reusable components driven by Props, and to create a dynamic interface from state rather than from rewriting the UI. Data lives in `src/data`, and components stay simple and reusable.
 
-## Implementation
+### 4.2 Theory
 
-| Requirement | Evidence |
+A **functional component** is a JavaScript function that returns React Native elements. Components are the unit of reuse in the UI.
+
+**Props** (properties) are inputs passed from a parent to a child. The child should treat props as read-only. Passing `title`, `description` and `tags` into `ProjectCard` is an example: the same card component renders many projects with different data.
+
+**State** holds values that change over time. The React Hook **`useState`** returns the current value and a setter. Calling the setter schedules a re-render so the UI updates. Examples in this project:
+
+- `isDark` in `App.tsx` drives light/dark theme for the whole tree.  
+- Contact form fields and error messages live in `useState` inside `ContactForm`.  
+- Expanded/collapsed details live in `useState` inside `ProjectCard`.
+
+### 4.3 Reusable components
+
+| Component | Purpose |
 | --- | --- |
-| Reusable components | `src/components/` — `ProjectCard`, `SkillChip`, `ThemeToggle`, `ContactForm`, … |
-| Props | `ProjectsScreen` → `<ProjectCard title={…} />` from `src/data/projectCatalog.ts` |
-| Dynamic UI | Theme `isDark` in `App.tsx`; form errors in `ContactForm`; expand in `ProjectCard` |
+| ProjectCard | Receives title, description and tags via Props |
+| SkillChip | Takes a label and an accent; used in Skills and inside cards |
+| ThemeToggle | A controlled Switch with no hard-coded theme |
+| ContactForm | A stateful form composed of ContactInput |
 
-## Screenshots
+### 4.4 Data flow on the Projects screen
 
-![Projects — cards via Props](../screenshots/assignment-3/01-projects-props-cards.png)
+`ProjectsScreen` reads project data from `src/data` and maps each item to a `ProjectCard`, passing title and tags as Props. The Details control is a `Pressable`, and the expanded state lives inside the card using `useState`.
 
-![Theme toggle / useState](../screenshots/assignment-3/02-home-theme-toggle-bottom.png)
+### 4.5 Output
 
-![Dark mode](../screenshots/assignment-3/03-dark-mode.png)
+![Figure 2: Projects screen built from ProjectCard components](../screenshots/assignment-3/01-projects-props-cards.png)
 
-![Form state errors](../screenshots/assignment-3/04-form-state-errors.png)
+![Figure 3: Theme — isDark with the dark-mode Switch](../screenshots/assignment-3/03-dark-mode.png)
 
-**Viva lines:**  
-1. “Data lives in `src/data`; components stay reusable via Props.”  
-2. “`isDark` updates the whole theme when the Switch toggles.”
+![Figure 4: Form — ContactForm errors driven by useState](../screenshots/assignment-3/04-form-state-errors.png)
 
 ---
 
-# Assignment 4 — Project Structure and Reusable Components
+# 5. Assignment 4: Folder Structure and State
 
 **COs:** CO2, CO3
 
-## Theory
+### 5.1 Aim
 
-A maintainable React Native app separates:
+To organise the project with a documented `src/` tree in which every folder matches a concept from the course, and to show state updating the interface through the Switch and validation.
 
-- **Screens** — one route / page  
-- **Components** — reusable UI pieces  
-- **Data** — static content / JSON  
-- **Theme / navigation / types** — cross-cutting concerns  
+### 5.2 Theory
 
-State-based updates (theme, form validation) prove the UI reacts to `useState` without rewriting components.
+A well-structured React Native project separates concerns:
 
-## Folder structure (summary)
+- **Screens** map to routes or pages the user navigates between.  
+- **Components** are reusable UI pieces configured with Props.  
+- **Data** modules hold static content so components stay dumb and reusable.  
+- **Theme** holds colours, typography and theme context.  
+- **Navigation** wires screens into a navigator.  
+- **Types** document TypeScript interfaces for safety.
 
-```
-TanmayPortfolio/
-├── android/              # Native Android (Android Studio)
-├── assets/images/        # profile.jpg, project covers
-├── docs/                 # Reports & screenshots
-├── src/
-│   ├── components/       # Props-driven UI
-│   ├── screens/          # Portfolio sections
-│   ├── data/             # profile, skills, projects.json, …
-│   ├── theme/            # colors, ThemeContext
-│   ├── navigation/       # Stack navigator
-│   └── types/
-├── App.tsx               # useState theme + NavigationContainer
-└── package.json
-```
+`App.tsx` is the root. It owns theme `useState`, wraps `ThemeProvider` and `NavigationContainer`, and mounts the stack navigator. State-based updates (theme toggle, form validation) prove the UI reacts to state without rewriting component trees by hand.
 
-**Full document:** [`../assignment-4-folder-structure.md`](../assignment-4-folder-structure.md)
+### 5.3 Documented folder structure
 
-State demos: dark-mode Switch; Contact validation errors (see Assignment 3 screenshots).
+| Folder / File | Responsibility |
+| --- | --- |
+| `android/` | Native Gradle project, opened in Android Studio |
+| `App.tsx` | Root `useState(isDark)`, ThemeProvider and Navigation |
+| `src/components/` | Reusable UI: ProjectCard, SkillChip, ThemeToggle and others |
+| `src/screens/` | One screen per portfolio section |
+| `src/data/` | Static content, which keeps components prop-driven |
+| `src/theme/` | Colours, tokens and ThemeContext |
+| `src/navigation/` | Stack navigator for all screens |
+| `docs/` | Reports and screenshots for submission |
+
+### 5.4 State in the application
+
+- **Theme state.** `isDark` lives in `App.tsx` and the Switch updates the whole theme when toggled.  
+- **Validation state.** The contact form updates its error state on submission, which changes borders and messages on screen.
+
+*Full tree: `docs/assignment-4-folder-structure.md`.*
 
 ---
 
-# Assignment 5 — Student Profile Application (Core Components)
+# 6. Assignment 5: Student Profile App with Core Components
 
 **COs:** CO3
 
-## Theory
+### 6.1 Aim
 
-React Native core building blocks:
+To build a student profile style application that uses the eight core React Native components. The portfolio sections form the profile app: Home, About, Skills, Projects, Experience, Certifications, Resume and Contact.
 
-| Component | Role |
-| --- | --- |
-| `View` | Layout container |
-| `Text` | Labels, titles, body |
-| `Image` | Profile / media |
-| `TextInput` | User input |
-| `Button` | Primary actions |
-| `Switch` | Boolean toggle |
-| `ScrollView` | Scrollable pages |
-| `StyleSheet` | Styles object |
+### 6.2 Theory
 
-## Where used in TanmayPortfolio
+React Native provides a small set of **core components** that map to native UI:
 
-| Component | Location |
-| --- | --- |
-| `View` / `Text` | Every screen |
-| `Image` | Profile photo (`assets/images/profile.jpg`) |
-| `TextInput` | `ContactInput` / Contact form |
-| `Button` | Contact submit |
-| `Switch` | `ThemeToggle` |
-| `ScrollView` | `ScreenContainer` |
-| `StyleSheet` | All styled components |
+| Component | Role in theory | Role in this app |
+| --- | --- | --- |
+| `View` | Layout container (like a `div`) | Almost every layout |
+| `Text` | All visible text | Titles, bio and errors |
+| `Image` | Bitmap / photo display | Profile photo (`profile.jpg`) |
+| `TextInput` | Text entry field | Contact form fields |
+| `Button` | Platform button control | Contact submit |
+| `Switch` | Boolean toggle | ThemeToggle |
+| `ScrollView` | Scrollable container | ScreenContainer |
+| `StyleSheet` | Style definitions | Every styled file |
 
-Portfolio sections act as a student-profile app: Home, About, Skills, Projects, Experience, Certifications, Resume, Contact.
+Styling is applied with `StyleSheet.create`, which groups style objects and keeps render code readable. Layout among Views uses Flexbox (covered further in Assignment 6).
 
-## Screenshots
+### 6.3 Profile screens
 
-![Home / profile](../screenshots/assignment-5/01-home-profile.png)
+Each section of the portfolio is a profile screen. Skills uses `SkillChip` inside a `ScrollView`, Experience shows AdMax and CodSoft on a timeline rail, About uses profile-style cards, and Contact uses `TextInput` and `Button`.
 
-![Skills scroll](../screenshots/assignment-5/02-skills-scroll.png)
+### 6.4 Output
 
-![Experience](../screenshots/assignment-5/03-experience.png)
+![Figure 5: Skills — SkillChip + ScrollView](../screenshots/assignment-5/02-skills-scroll.png)
 
-![More / About menu](../screenshots/assignment-5/04-more-menu.png)
+![Figure 6: Experience — AdMax and CodSoft rail](../screenshots/assignment-5/03-experience.png)
 
-![Contact form](../screenshots/assignment-5/05-contact-form.png)
+![Figure 7: About — profile-style cards](../screenshots/assignment-5/04-more-menu.png)
 
-![Dark mode Switch](../screenshots/assignment-5/06-home-dark-switch.png)
+![Figure 8: Contact — TextInput + Button](../screenshots/assignment-5/05-contact-form.png)
+
+![Figure 9: Switch — dark mode](../screenshots/assignment-5/06-home-dark-switch.png)
 
 ---
 
-# Assignment 6 — Flexbox, TextInput, onPress, Alert
+# 7. Assignment 6: Flexbox, TextInput and onPress
 
 **COs:** CO3, CO4
 
-## Theory
+### 7.1 Aim
 
-- **Flexbox** (`flexDirection`, `flexWrap`, `justifyContent`, `alignItems`) lays out rows/columns that adapt to screen width.  
-- **Controlled TextInput** binds `value` + `onChangeText` to `useState`.  
-- **`onPress`** on `Button` / `Pressable` runs handlers (validate, navigate, open links).  
-- **`Alert`** shows feedback after actions.
+To design responsive layouts with Flexbox, accept user input through controlled TextInputs, handle `onPress` events, and display Alert messages based on user actions.
 
-## Implementation
+### 7.2 Theory — Flexbox
 
-| Requirement | Evidence |
+Flexbox is the primary layout system in React Native. Important properties include:
+
+- `flexDirection` — `'row'` or `'column'` (default is column on RN)  
+- `flexWrap` — allow items to wrap to the next line  
+- `justifyContent` — alignment along the main axis  
+- `alignItems` — alignment along the cross axis  
+- `flex` — how much space a child should grow to fill  
+
+In this project, Explore CTAs and skill chips use wrapping rows so content reflows on smaller widths. Experience uses a horizontal row: timeline rail on the left, card content on the right.
+
+### 7.3 Theory — TextInput and events
+
+A **controlled** TextInput always displays a value from state (`value={name}`) and updates that state in `onChangeText`. This keeps the UI and data in sync and makes validation straightforward.
+
+**`onPress`** is the press handler for `Button` and `Pressable`. Pressing Submit runs `handleSubmit`, which validates fields. Empty submit updates error state (red borders and messages). Valid submit shows an **`Alert`** confirmation—the academic feedback required by the brief.
+
+`Pressable` is the modern replacement for older `TouchableOpacity`-style APIs; it still demonstrates touchable event handling with `onPress`, `onPressIn` and `onPressOut`.
+
+### 7.4 Flexbox layouts in the app
+
+| Layout | Implementation |
 | --- | --- |
-| Flexbox | Home CTA wrap; skill chips `flexWrap`; Experience row + rail |
-| TextInput | Controlled fields in `ContactForm` |
-| `onPress` | `<Button onPress={handleSubmit} />`; Pressable CTAs / dock |
-| Alert | Valid contact submit shows confirmation Alert |
+| Home CTA wrap | Explore buttons use `flexWrap` so CTAs reflow |
+| SkillCategory chips | SkillChip row with `flexWrap` |
+| Experience row + rail | Horizontal row: rail left, card right |
+| Project card actions | Details and GitHub in a Flexbox row |
 
-## Screenshots
+### 7.5 Output
 
-![Projects layout](../screenshots/assignment-6/01-projects-layout.png)
+![Figure 10: Skills screen — chips wrapping](../screenshots/assignment-6/02-skills-flexbox.png)
 
-![Skills Flexbox chips](../screenshots/assignment-6/02-skills-flexbox.png)
+![Figure 11: Empty form — TextInput fields](../screenshots/assignment-6/03-contact-textinput.png)
 
-![Contact TextInput](../screenshots/assignment-6/03-contact-textinput.png)
+![Figure 12: Submit pressed — onPress errors](../screenshots/assignment-6/04-contact-validation.png)
 
-![Validation on empty submit](../screenshots/assignment-6/04-contact-validation.png)
-
-![Contact success path](../screenshots/assignment-6/05-contact-success.png)
+![Figure 13: Valid path — Alert / success](../screenshots/assignment-6/05-contact-success.png)
 
 ---
 
-# Assignment 7 — Multi-Screen Stack Navigation
+# 8. Assignment 7: Multi-Screen Stack Navigation
 
 **COs:** CO4
 
-## Theory
+### 8.1 Aim
 
-**Stack Navigation** keeps screens in a stack. `navigate('About')` pushes About; returning pops or navigates to another named route. React Navigation’s native stack (`createNativeStackNavigator`) integrates with platform transitions.
+To create Home, About and Contact screens, implement Stack Navigation, and navigate between screens using buttons.
 
-## Implementation
+### 8.2 Theory
+
+**Navigation** lets an app show one screen at a time while keeping a history of previous screens.
+
+A **stack navigator** models screens as a stack of cards:
+
+- The **initial route** (Home) is the first card.  
+- Calling `navigation.navigate('About')` **pushes** About onto the stack (or focuses it if already present).  
+- Returning to a previous screen **pops** or navigates to that route name.  
+- Transitions (for example slide from the right) communicate that a new screen was pushed.
+
+**React Navigation** provides `createNativeStackNavigator`, which uses native platform navigation containers for smooth transitions. Each screen is registered with `<Stack.Screen name="…" component={…} />`.
+
+Button presses are the usual trigger: a `Pressable` or `Button` calls `navigation.navigate('Contact')`. This links **touchable events** (Assignment 6) with **multi-screen structure** (Assignment 7).
+
+### 8.3 Implementation in TanmayPortfolio
 
 | Requirement | Evidence |
 | --- | --- |
-| Home, About, Contact | `HomeScreen`, `AboutScreen`, `ContactScreen` |
-| Stack Navigator | `src/navigation/AppNavigator.tsx` |
-| Navigate with buttons | Home / dock / menu call `navigation.navigate(…)` |
+| Home, About, Contact screens | `HomeScreen`, `AboutScreen`, `ContactScreen` |
+| Stack Navigation | `src/navigation/AppNavigator.tsx` — `createNativeStackNavigator` |
+| Navigate with buttons | Home CTAs, floating dock and menu call `navigation.navigate(…)` |
 
-Screens on the stack: Home (initial), About, Skills, Projects, Contact, Experience, Certifications, Resume.
+Additional stack screens: Skills, Projects, Experience, Certifications, Resume. The native header is hidden (`headerShown: false`); the brand mark and floating dock act as navigation controls. Animation is `slide_from_right`.
 
-Native header is hidden (`headerShown: false`); branding + floating dock provide navigation. Transitions use `animation: 'slide_from_right'`.
+### 8.4 Explanation
 
-## Screenshots (navigation surfaces)
+From Home, tapping **View work**, **About**, or **Talk (Contact)** pushes the corresponding stack screen. Tapping the brand mark navigates back to Home. The user experiences multi-screen navigation without leaving the single React Native process.
 
-![Home — entry to stack](../screenshots/assignment-3/03-dark-mode.png)
+### 8.5 Output
 
-![About / More destination](../screenshots/assignment-5/04-more-menu.png)
+![Figure 14: Home — stack root](../screenshots/assignment-3/03-dark-mode.png)
 
-![Contact destination](../screenshots/assignment-6/03-contact-textinput.png)
+![Figure 15: About destination](../screenshots/assignment-5/04-more-menu.png)
 
-**Demo:** From Home tap **About** / **Talk (Contact)** / **View work** and show the screen change; tap brand mark to return Home.
+![Figure 16: Contact destination](../screenshots/assignment-6/03-contact-textinput.png)
 
 ---
 
-# Assignment 8 — Dynamic Data + FlatList
+# 9. Assignment 8: Dynamic Data Rendering with FlatList
 
 **COs:** CO5
 
-## Theory
+### 9.1 Aim
 
-- **Local JSON** stores list data without a server.  
-- **`FlatList`** virtualizes long lists (only visible rows mount), with props such as `initialNumToRender`, `windowSize`, and `removeClippedSubviews`.  
-- Loading / error UI keeps the screen usable while data loads.
+To fetch data from a local JSON file (or public API), display it with `FlatList`, and allow efficient scrolling.
 
-## Implementation
+### 9.2 Theory
+
+Static arrays hard-coded inside a screen become hard to maintain. Storing projects in a **local JSON file** separates content from presentation. A loader function (`fetchProjects`) can read that JSON asynchronously—simulating the same pattern used for network APIs.
+
+**`FlatList`** is React Native’s efficient list component. Unlike mapping every item inside a `ScrollView` (which mounts all children at once), FlatList **virtualises** the list: only rows near the viewport are rendered. Important props include:
+
+- `data` — the array of items  
+- `renderItem` — how each item becomes a component  
+- `keyExtractor` — stable unique keys  
+- `initialNumToRender`, `windowSize`, `removeClippedSubviews` — tune memory and scroll performance  
+
+Loading and error states improve UX while data is fetched or if loading fails.
+
+### 9.3 Implementation
 
 | Requirement | Evidence |
 | --- | --- |
-| Local JSON | `src/data/projects.json` via `fetchProjects()` in `projectCatalog.ts` |
+| Local JSON | `src/data/projects.json` loaded by `fetchProjects()` in `projectCatalog.ts` |
 | FlatList | `ProjectsScreen.tsx` |
-| Efficient scroll | FlatList tuning props on the projects list |
+| Efficient scrolling | FlatList tuning props on the projects list |
 
-## Screenshots
+### 9.4 Explanation
 
-![Projects FlatList](../screenshots/assignment-3/01-projects-props-cards.png)
+Opening Projects triggers a refresh of the catalog. While loading, an activity indicator may appear. The list then scrolls smoothly; expanding a card still uses Props and local `useState` from Assignment 3.
 
-![Projects layout](../screenshots/assignment-6/01-projects-layout.png)
+### 9.5 Output
 
-**Demo:** Open Projects — brief loading if refreshing — then scroll the list and expand a card.
+![Figure 17: Projects FlatList](../screenshots/assignment-3/01-projects-props-cards.png)
+
+![Figure 18: Projects layout / scroll](../screenshots/assignment-6/01-projects-layout.png)
 
 ---
 
-# Assignment 9 — Student Portfolio Application
+# 10. Assignment 9: Student Portfolio Application
 
 **COs:** CO3, CO4, CO5
 
-## Theory / objective
+### 10.1 Aim / Objective
 
-A student portfolio is a multi-screen app that presents identity, education, skills, projects, and contact — with navigation and responsive layout. It combines Assignments 5–8 into one coherent product.
+To develop a responsive and interactive **Student Portfolio Application** using React Native that presents identity, education, skills, projects and contact information with stack navigation and Flexbox / StyleSheet layout.
 
-## Requirements checklist
+### 10.2 Theory
 
-| Requirement | Where in app |
+A student portfolio app is a **product composition** of earlier labs:
+
+- **Identity screens** use core components (`Image`, `Text`, `View`) for name, photo and introduction.  
+- **About** presents education and career objectives as structured content cards.  
+- **Skills** communicate technical and soft abilities; chips with Flexbox wrap keep the layout responsive.  
+- **Projects** use FlatList over JSON data so the list scales.  
+- **Contact** uses controlled TextInputs and Button `onPress` for interaction.  
+- **Stack Navigation** connects every screen into one flow.
+
+Responsive UI means layouts adapt with Flexbox and StyleSheet rather than fixed absolute positions that break on different emulator sizes.
+
+### 10.3 Requirements checklist
+
+| Requirement | Evidence in TanmayPortfolio |
 | --- | --- |
-| Home — name, photo, intro | `HomeScreen` + profile image |
+| Home — name, photo, intro | `HomeScreen` + `profile.jpg` |
 | About — education + career objectives | `AboutScreen` |
-| Skills — technical + soft | `SkillsScreen` + `SKILL_CATEGORIES` (includes Soft Skills) |
+| Skills — technical + soft | `SkillsScreen` + Soft Skills in `skills.ts` |
 | Projects — FlatList | `ProjectsScreen` + `projects.json` |
 | Contact — TextInput + Button | `ContactForm` |
 | Stack Navigator | `AppNavigator` |
 | StyleSheet + Flexbox | All screens |
 
-## Screenshots
+### 10.4 Output
 
-![Home](../screenshots/assignment-5/01-home-profile.png)
+![Figure 19: Home — student identity](../screenshots/assignment-5/01-home-profile.png)
 
-![About](../screenshots/assignment-5/04-more-menu.png)
+![Figure 20: Skills — technical and soft](../screenshots/assignment-5/02-skills-scroll.png)
 
-![Skills](../screenshots/assignment-5/02-skills-scroll.png)
+![Figure 21: Projects — FlatList](../screenshots/assignment-3/01-projects-props-cards.png)
 
-![Projects](../screenshots/assignment-3/01-projects-props-cards.png)
-
-![Contact](../screenshots/assignment-5/05-contact-form.png)
+![Figure 22: Contact — form](../screenshots/assignment-5/05-contact-form.png)
 
 ---
 
-# Assignment 10 — Personal Portfolio Application
+# 11. Assignment 10: Personal Portfolio Application
 
 **COs:** CO1, CO2, CO3, CO4, CO5
 
-## Theory / objective
+### 11.1 Aim / Objective
 
-Assignment 10 is the capstone personal portfolio: the same product surface as Assignment 9, with full coverage of earlier concepts (setup, comparison rationale, components/state, structure, core widgets, Flexbox/events, stack nav, FlatList).
+To develop a responsive and interactive **Personal Portfolio Application** using React Native. Assignment 10 is the capstone: the same product surface as Assignment 9, with explicit coverage of every course outcome from setup through dynamic lists.
 
-## Capstone mapping
+### 11.2 Theory
 
-| Concept from earlier labs | Visible in portfolio |
+A personal portfolio on mobile must balance **content**, **structure** and **interaction**:
+
+1. **Content** — who the student is, what they know, what they built, how to reach them.  
+2. **Structure** — modular folders, reusable components, typed data, and a navigator that keeps screens organised.  
+3. **Interaction** — theme switching, form validation, press handlers, and list scrolling that feel native.
+
+React Native is appropriate because one TypeScript codebase demonstrates both React concepts (Props, state, components) and mobile concepts (native views, Flexbox, navigation, FlatList) without maintaining separate native apps.
+
+### 11.3 Capstone mapping to earlier assignments
+
+| Earlier concept | Visible in the personal portfolio |
 | --- | --- |
-| RN project + emulator (A1) | App runs on Pixel via Community CLI |
-| Why RN (A2) | Documented comparison report |
-| Props + `useState` (A3–A4) | Cards, theme, form validation |
-| Core components (A5) | View/Text/Image/TextInput/Button/Switch/ScrollView |
-| Flexbox + onPress + Alert (A6) | Layouts + Contact submit |
-| Stack Navigation (A7) | Multi-screen navigator |
-| JSON + FlatList (A8) | Projects list |
-| Full portfolio UI (A9–A10) | Home → Contact (+ Experience, Certs, Resume) |
+| A1 Setup + emulator | App runs on Pixel via Community CLI |
+| A2 Why RN | Documented comparison and project choice |
+| A3–A4 Props, state, structure | Cards, theme, form, `src/` layout |
+| A5 Core components | View, Text, Image, TextInput, Button, Switch, ScrollView |
+| A6 Flexbox + onPress + Alert | Layouts and Contact submit |
+| A7 Stack Navigation | Multi-screen navigator |
+| A8 JSON + FlatList | Projects list |
+| A9 Portfolio UI | Home through Contact (+ Experience, Certs, Resume) |
 
-## Screenshots (capstone set)
+### 11.4 Output
 
-![Home dark](../screenshots/assignment-3/03-dark-mode.png)
+![Figure 23: Personal portfolio Home](../screenshots/assignment-3/03-dark-mode.png)
 
-![Skills Flexbox](../screenshots/assignment-6/02-skills-flexbox.png)
+![Figure 24: Experience section](../screenshots/assignment-5/03-experience.png)
 
-![Experience](../screenshots/assignment-5/03-experience.png)
-
-![Contact validation](../screenshots/assignment-6/04-contact-validation.png)
-
-![Contact success](../screenshots/assignment-6/05-contact-success.png)
+![Figure 25: Contact interaction](../screenshots/assignment-6/04-contact-validation.png)
 
 ---
 
-## Rubric alignment (Excellent)
+# 12. Rubric Alignment
 
-| Criteria | How this project scores |
+| Criterion | Evidence in the project |
 | --- | --- |
-| Functionality & Output | All sections run; theme; validation; links; stack nav; FlatList |
-| Code Structure & Syntax | Modular `src/`; TypeScript; consistent naming |
-| Concept Implementation | Props, useState, core components, Flexbox, Pressable/Button, Stack, FlatList |
-| Readability & Documentation | Comments, `docs/`, README, this report |
+| Functionality and Output | All sections run. Theme Switch works. Form validation works. External links open. App installs on emulator. Stack navigation and FlatList work. |
+| Code Structure and Syntax | Modular `src/` layout, TypeScript, consistent component names, not a single-file app. |
+| Concept Implementation | Props, useState, eight core components, Flexbox, TextInput, onPress, Stack Navigation and FlatList are all visible. |
+| Readability and Documentation | File comments, `docs/` reports, README and screenshot folders for assignments. |
 
 ---
 
-## Suggested viva walkthrough (4–5 minutes)
+# 13. Conclusion
 
-1. Home — name, photo, intro; stack CTAs / dock  
-2. About — education + career direction  
-3. Skills — technical + soft skill chips (Flexbox wrap)  
-4. Projects — FlatList scroll, expand Details  
-5. Contact — empty Submit → errors; valid Submit → Alert  
-6. Toggle dark mode (`useState` + Switch)  
-7. Mention `projects.json` + `fetchProjects` (Assignment 8)  
-8. Optionally open `android/` in Android Studio + Logcat (Assignment 1)
+Assignments **1 to 10** were completed as a single React Native application built with the Community CLI and run on the Android emulator. The project covers:
+
+- setup and Hello World,  
+- a comparison of Native, Hybrid and React Native,  
+- reusable components with Props and state with `useState`,  
+- a documented folder structure,  
+- the core React Native components,  
+- Flexbox layouts and controlled inputs with `onPress` / Alert,  
+- multi-screen Stack Navigation,  
+- dynamic JSON data with FlatList,  
+- and a complete student / personal portfolio product.
+
+Two ideas summarise the design: **data lives in `src/data` while components stay reusable through Props**, and **`isDark` in `App.tsx` updates the whole theme when the Switch is toggled**. Stack navigation and FlatList complete the multi-screen, data-driven portfolio required for Assignments 7–10.
+
+**Submitted by:** Tanmay Shinde  
+**Enrollment Number:** ADT23SOCB1617  
 
 ---
 
 ## References
 
-- React Native Docs — https://reactnative.dev  
+- React Native Documentation — https://reactnative.dev  
 - React Navigation — https://reactnavigation.org  
 - Android Developers — https://developer.android.com  
 - Project repository — https://github.com/tanmays0/TanmayPortfolio  
-
----
-
-*End of report — Tanmay Shinde · CPAD Laboratory Assignments 1–10*

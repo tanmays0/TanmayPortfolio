@@ -23,50 +23,68 @@ class ReportPDF(FPDF):
         self.set_font("Body", "", 8)
         self.set_text_color(110, 110, 120)
         self.set_x(self.l_margin)
-        self.cell(0, 5, "Tanmay Shinde  |  CPAD Assignments 1-10", align="L")
-        self.ln(7)
+        self.cell(0, 4, "Tanmay Shinde  |  CPAD Assignments 1-10", align="L")
+        self.ln(5)
 
     def footer(self) -> None:
-        self.set_y(-12)
+        self.set_y(-10)
         self.set_font("Body", "", 8)
         self.set_text_color(140, 140, 150)
-        self.cell(0, 8, f"Tanmay Shinde  |  CPAD Assignments 1-10  |  Page {self.page_no()}", align="C")
+        self.cell(0, 6, f"Tanmay Shinde  |  CPAD Assignments 1-10  |  Page {self.page_no()}", align="C")
 
 
 def sx(pdf: ReportPDF) -> None:
     pdf.set_x(pdf.l_margin)
 
 
+def remaining(pdf: ReportPDF) -> float:
+    return pdf.page_break_trigger - pdf.get_y()
+
+
+def ensure_space(pdf: ReportPDF, need: float) -> None:
+    """Start a new page only when the block cannot fit."""
+    if remaining(pdf) < need:
+        pdf.add_page()
+
+
+def section(pdf: ReportPDF, title: str) -> None:
+    """Start an assignment section; reuse page if enough room remains."""
+    ensure_space(pdf, 48)
+    if pdf.get_y() > pdf.t_margin + 8:
+        pdf.ln(2)
+    h1(pdf, title)
+
+
 def h1(pdf: ReportPDF, text: str) -> None:
     sx(pdf)
-    pdf.set_font("Body", "B", 14)
+    pdf.set_font("Body", "B", 13)
     pdf.set_text_color(20, 20, 28)
-    pdf.multi_cell(0, 7, text)
-    pdf.ln(2)
-
-
-def h2(pdf: ReportPDF, text: str) -> None:
-    pdf.ln(2)
-    sx(pdf)
-    pdf.set_font("Body", "B", 11)
-    pdf.set_text_color(30, 30, 40)
     pdf.multi_cell(0, 6, text)
     pdf.ln(1)
 
 
+def h2(pdf: ReportPDF, text: str) -> None:
+    pdf.ln(1)
+    sx(pdf)
+    pdf.set_font("Body", "B", 10.5)
+    pdf.set_text_color(30, 30, 40)
+    pdf.multi_cell(0, 5, text)
+    pdf.ln(0.5)
+
+
 def body(pdf: ReportPDF, text: str) -> None:
     sx(pdf)
-    pdf.set_font("Body", "", 10)
+    pdf.set_font("Body", "", 9.5)
     pdf.set_text_color(35, 35, 42)
-    pdf.multi_cell(0, 5, text)
-    pdf.ln(1.5)
+    pdf.multi_cell(0, 4.4, text)
+    pdf.ln(0.6)
 
 
 def bullet(pdf: ReportPDF, text: str) -> None:
     sx(pdf)
-    pdf.set_font("Body", "", 10)
+    pdf.set_font("Body", "", 9.5)
     pdf.set_text_color(35, 35, 42)
-    pdf.multi_cell(0, 5, f"- {text}")
+    pdf.multi_cell(0, 4.4, f"- {text}")
 
 
 def table(pdf: ReportPDF, headers: list[str], rows: list[list[str]], widths: list[float]) -> None:
@@ -75,71 +93,74 @@ def table(pdf: ReportPDF, headers: list[str], rows: list[list[str]], widths: lis
     pdf.set_fill_color(230, 234, 245)
     pdf.set_text_color(20, 20, 28)
     for i, h in enumerate(headers):
-        pdf.cell(widths[i], 6.5, h, border=1, fill=True)
+        pdf.cell(widths[i], 5.5, h, border=1, fill=True)
     pdf.ln()
     pdf.set_font("Body", "", 8)
     pdf.set_text_color(40, 40, 48)
     for row in rows:
-        # compute row height from wrapped lines
         lines_per = []
         for i, cell in enumerate(row):
-            n = pdf.multi_cell(widths[i], 4.2, cell, dry_run=True, output="LINES")
+            n = pdf.multi_cell(widths[i], 3.8, cell, dry_run=True, output="LINES")
             lines_per.append(max(1, len(n)))
-        row_h = 4.2 * max(lines_per) + 2
+        row_h = 3.8 * max(lines_per) + 1.4
         if pdf.get_y() + row_h > pdf.page_break_trigger:
             pdf.add_page()
             sx(pdf)
         x0, y0 = pdf.l_margin, pdf.get_y()
         for i, cell in enumerate(row):
             pdf.set_xy(x0 + sum(widths[:i]), y0)
-            # draw border box then text
             pdf.rect(x0 + sum(widths[:i]), y0, widths[i], row_h)
-            pdf.set_xy(x0 + sum(widths[:i]) + 1, y0 + 1)
-            pdf.multi_cell(widths[i] - 2, 4.2, cell)
+            pdf.set_xy(x0 + sum(widths[:i]) + 1, y0 + 0.6)
+            pdf.multi_cell(widths[i] - 2, 3.8, cell)
         pdf.set_y(y0 + row_h)
-    pdf.ln(3)
+    pdf.ln(1.5)
 
 
-def fig(pdf: ReportPDF, path: Path, caption: str, max_h: float = 105) -> None:
+def _fit_dims(w: float, h: float, max_w: float, max_h: float) -> tuple[float, float]:
+    disp_h = max_h
+    disp_w = disp_h * (w / h)
+    if disp_w > max_w:
+        disp_w = max_w
+        disp_h = disp_w * (h / w)
+    return disp_w, disp_h
+
+
+def fig(pdf: ReportPDF, path: Path, caption: str, max_h: float = 68) -> None:
     if not path.exists():
         body(pdf, f"[Missing screenshot: {path.name}]")
         return
     with Image.open(path) as im:
         w, h = im.size
     page_w = pdf.epw
-    disp_h = min(max_h, 115)
-    disp_w = disp_h * (w / h)
-    if disp_w > page_w * 0.5:
-        disp_w = page_w * 0.5
-        disp_h = disp_w * (h / w)
-    # two-up friendly: allow side by side if space; else center single
-    if pdf.get_y() + disp_h + 16 > pdf.page_break_trigger:
+    caption_h = 4.5
+    # Prefer staying on the current page: shrink to remaining space when possible.
+    room = remaining(pdf) - caption_h - 1.5
+    if room < 36:
         pdf.add_page()
+        room = remaining(pdf) - caption_h - 1.5
+    target_h = min(max_h, room)
+    disp_w, disp_h = _fit_dims(w, h, page_w * 0.42, target_h)
     x = pdf.l_margin + (page_w - disp_w) / 2
-    pdf.image(str(path), x=x, w=disp_w, h=disp_h)
-    pdf.set_y(pdf.get_y() + disp_h + 1)
+    y = pdf.get_y()
+    pdf.image(str(path), x=x, y=y, w=disp_w, h=disp_h)
+    pdf.set_y(y + disp_h + 0.4)
     sx(pdf)
-    pdf.set_font("Body", "", 8)
+    pdf.set_font("Body", "", 7.5)
     pdf.set_text_color(90, 90, 100)
-    pdf.multi_cell(0, 4, caption, align="C")
-    pdf.ln(3)
+    pdf.multi_cell(0, 3.4, caption, align="C")
+    pdf.ln(1.2)
 
 
-def fig_pair(pdf: ReportPDF, p1: Path, c1: str, p2: Path, c2: str, max_h: float = 95) -> None:
+def fig_pair(pdf: ReportPDF, p1: Path, c1: str, p2: Path, c2: str, max_h: float = 62) -> None:
     """Place two phone screenshots side by side."""
     page_w = pdf.epw
-    gap = 6
+    gap = 4
     col = (page_w - gap) / 2
 
-    def size_for(path: Path) -> tuple[float, float]:
+    def size_for(path: Path, height_cap: float) -> tuple[float, float]:
         with Image.open(path) as im:
             w, h = im.size
-        disp_h = max_h
-        disp_w = disp_h * (w / h)
-        if disp_w > col:
-            disp_w = col
-            disp_h = disp_w * (h / w)
-        return disp_w, disp_h
+        return _fit_dims(w, h, col, height_cap)
 
     if not p1.exists() or not p2.exists():
         if p1.exists():
@@ -148,58 +169,64 @@ def fig_pair(pdf: ReportPDF, p1: Path, c1: str, p2: Path, c2: str, max_h: float 
             fig(pdf, p2, c2, max_h)
         return
 
-    w1, h1 = size_for(p1)
-    w2, h2 = size_for(p2)
-    h = max(h1, h2)
-    if pdf.get_y() + h + 18 > pdf.page_break_trigger:
+    caption_h = 4.5
+    room = remaining(pdf) - caption_h - 1.5
+    if room < 36:
         pdf.add_page()
+        room = remaining(pdf) - caption_h - 1.5
+    target_h = min(max_h, room)
+
+    w1, h1 = size_for(p1, target_h)
+    w2, h2 = size_for(p2, target_h)
+    h = max(h1, h2)
     y = pdf.get_y()
     x1 = pdf.l_margin + (col - w1) / 2
     x2 = pdf.l_margin + col + gap + (col - w2) / 2
     pdf.image(str(p1), x=x1, y=y, w=w1, h=h1)
     pdf.image(str(p2), x=x2, y=y, w=w2, h=h2)
-    pdf.set_y(y + h + 1)
-    pdf.set_font("Body", "", 7.5)
+    pdf.set_y(y + h + 0.4)
+    pdf.set_font("Body", "", 7)
     pdf.set_text_color(90, 90, 100)
     sx(pdf)
-    pdf.cell(col, 4, c1, align="C")
-    pdf.cell(gap, 4, "")
-    pdf.cell(col, 4, c2, align="C", new_x="LMARGIN", new_y="NEXT")
-    pdf.ln(3)
+    pdf.cell(col, 3.4, c1, align="C")
+    pdf.cell(gap, 3.4, "")
+    pdf.cell(col, 3.4, c2, align="C", new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(1.2)
 
 
 def build() -> Path:
     pdf = ReportPDF(orientation="P", unit="mm", format="A4")
-    pdf.set_auto_page_break(auto=True, margin=16)
+    pdf.set_margins(14, 12, 14)
+    pdf.set_auto_page_break(auto=True, margin=12)
     pdf.add_font("Body", "", FONT_REG)
     pdf.add_font("Body", "B", FONT_BOLD)
 
     # ===== COVER =====
     pdf.add_page()
-    pdf.ln(18)
+    pdf.ln(10)
     sx(pdf)
-    pdf.set_font("Body", "B", 12)
+    pdf.set_font("Body", "B", 11)
     pdf.set_text_color(20, 20, 28)
     for line in [
         "MIT ART, DESIGN AND TECHNOLOGY UNIVERSITY",
         "MIT School of Computing, Pune",
         "Department of Information Technology",
     ]:
-        pdf.cell(0, 6, line, align="C", new_x="LMARGIN", new_y="NEXT")
-    pdf.ln(8)
-    pdf.set_font("Body", "", 11)
-    pdf.cell(0, 6, "Course: Cross Platform App Development (CPAD)", align="C", new_x="LMARGIN", new_y="NEXT")
-    pdf.ln(4)
-    pdf.set_font("Body", "B", 16)
+        pdf.cell(0, 5.5, line, align="C", new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(5)
+    pdf.set_font("Body", "", 10.5)
+    pdf.cell(0, 5.5, "Course: Cross Platform App Development (CPAD)", align="C", new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(3)
+    pdf.set_font("Body", "B", 15)
     pdf.set_text_color(61, 99, 232)
-    pdf.cell(0, 8, "ASSIGNMENT REPORT", align="C", new_x="LMARGIN", new_y="NEXT")
-    pdf.set_font("Body", "B", 13)
+    pdf.cell(0, 7, "ASSIGNMENT REPORT", align="C", new_x="LMARGIN", new_y="NEXT")
+    pdf.set_font("Body", "B", 12)
     pdf.set_text_color(20, 20, 28)
-    pdf.cell(0, 7, "Assignments 1 to 10", align="C", new_x="LMARGIN", new_y="NEXT")
-    pdf.ln(2)
-    pdf.set_font("Body", "", 11)
-    pdf.cell(0, 6, "React Native Developer Portfolio (TanmayPortfolio)", align="C", new_x="LMARGIN", new_y="NEXT")
-    pdf.ln(12)
+    pdf.cell(0, 6, "Assignments 1 to 10", align="C", new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(1)
+    pdf.set_font("Body", "", 10.5)
+    pdf.cell(0, 5.5, "React Native Developer Portfolio (TanmayPortfolio)", align="C", new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(6)
     table(
         pdf,
         ["Field", "Detail"],
@@ -213,10 +240,10 @@ def build() -> Path:
             ["Academic Year", "2026-27"],
             ["Repository", "github.com/tanmays0/TanmayPortfolio"],
         ],
-        [55, 115],
+        [55, 117],
     )
 
-    # ===== DECLARATION =====
+    # ===== DECLARATION + TOC (same page when possible) =====
     pdf.add_page()
     h1(pdf, "Declaration")
     body(
@@ -227,13 +254,11 @@ def build() -> Path:
         "The application was built with React Native (Community CLI) and executed on the Pixel Android emulator. "
         "All screenshots in this report were captured from that running application.",
     )
-    pdf.ln(6)
+    pdf.ln(2)
     body(pdf, "Student Name: Tanmay Shinde")
     body(pdf, "Enrollment Number: ADT23SOCB1617")
     body(pdf, "Signature: ______________________")
-
-    # ===== TOC =====
-    pdf.add_page()
+    pdf.ln(3)
     h1(pdf, "Table of Contents")
     toc = [
         "1. Introduction and Project Overview",
@@ -302,8 +327,7 @@ def build() -> Path:
     )
 
     # ===== A1 =====
-    pdf.add_page()
-    h1(pdf, "2. Assignment 1: Setup and Hello World")
+    section(pdf, "2. Assignment 1: Setup and Hello World")
     body(pdf, "COs: CO1, CO2")
     h2(pdf, "2.1 Aim")
     body(
@@ -336,8 +360,7 @@ def build() -> Path:
     fig(pdf, SHOTS / "assignment-1" / "01-home-hello-portfolio.png", "Figure 1: Portfolio Home screen running on the emulator")
 
     # ===== A2 =====
-    pdf.add_page()
-    h1(pdf, "3. Assignment 2: Native vs Hybrid vs React Native")
+    section(pdf, "3. Assignment 2: Native vs Hybrid vs React Native")
     body(pdf, "COs: CO1")
     h2(pdf, "3.1 Aim")
     body(
@@ -388,8 +411,7 @@ def build() -> Path:
     )
 
     # ===== A3 =====
-    pdf.add_page()
-    h1(pdf, "4. Assignment 3: Components, Props and useState")
+    section(pdf, "4. Assignment 3: Components, Props and useState")
     body(pdf, "COs: CO2, CO3")
     h2(pdf, "4.1 Aim")
     body(
@@ -440,8 +462,7 @@ def build() -> Path:
     )
 
     # ===== A4 =====
-    pdf.add_page()
-    h1(pdf, "5. Assignment 4: Folder Structure and State")
+    section(pdf, "5. Assignment 4: Folder Structure and State")
     body(pdf, "COs: CO2, CO3")
     h2(pdf, "5.1 Aim")
     body(
@@ -479,8 +500,7 @@ def build() -> Path:
     bullet(pdf, "Validation state: the contact form updates error state on submission, changing borders and messages.")
 
     # ===== A5 =====
-    pdf.add_page()
-    h1(pdf, "6. Assignment 5: Student Profile App with Core Components")
+    section(pdf, "6. Assignment 5: Student Profile App with Core Components")
     body(pdf, "COs: CO3")
     h2(pdf, "6.1 Aim")
     body(
@@ -525,6 +545,7 @@ def build() -> Path:
         "Figure 5: Skills - SkillChip + ScrollView",
         SHOTS / "assignment-5" / "03-experience.png",
         "Figure 6: Experience - AdMax and CodSoft rail",
+        max_h=55,
     )
     fig_pair(
         pdf,
@@ -532,12 +553,12 @@ def build() -> Path:
         "Figure 7: About - profile-style cards",
         SHOTS / "assignment-5" / "05-contact-form.png",
         "Figure 8: Contact - TextInput + Button",
+        max_h=55,
     )
-    fig(pdf, SHOTS / "assignment-5" / "06-home-dark-switch.png", "Figure 9: Switch - dark mode")
+    fig(pdf, SHOTS / "assignment-5" / "06-home-dark-switch.png", "Figure 9: Switch - dark mode", max_h=55)
 
     # ===== A6 =====
-    pdf.add_page()
-    h1(pdf, "7. Assignment 6: Flexbox, TextInput and onPress")
+    section(pdf, "7. Assignment 6: Flexbox, TextInput and onPress")
     body(pdf, "COs: CO3, CO4")
     h2(pdf, "7.1 Aim")
     body(
@@ -587,8 +608,7 @@ def build() -> Path:
     )
 
     # ===== A7 =====
-    pdf.add_page()
-    h1(pdf, "8. Assignment 7: Multi-Screen Stack Navigation")
+    section(pdf, "8. Assignment 7: Multi-Screen Stack Navigation")
     body(pdf, "COs: CO4")
     h2(pdf, "8.1 Aim")
     body(
@@ -643,8 +663,7 @@ def build() -> Path:
     )
 
     # ===== A8 =====
-    pdf.add_page()
-    h1(pdf, "9. Assignment 8: Dynamic Data Rendering with FlatList")
+    section(pdf, "9. Assignment 8: Dynamic Data Rendering with FlatList")
     body(pdf, "COs: CO5")
     h2(pdf, "9.1 Aim")
     body(
@@ -693,8 +712,7 @@ def build() -> Path:
     )
 
     # ===== A9 =====
-    pdf.add_page()
-    h1(pdf, "10. Assignment 9: Student Portfolio Application")
+    section(pdf, "10. Assignment 9: Student Portfolio Application")
     body(pdf, "COs: CO3, CO4, CO5")
     h2(pdf, "10.1 Aim / Objective")
     body(
@@ -744,8 +762,7 @@ def build() -> Path:
     )
 
     # ===== A10 =====
-    pdf.add_page()
-    h1(pdf, "11. Assignment 10: Personal Portfolio Application")
+    section(pdf, "11. Assignment 10: Personal Portfolio Application")
     body(pdf, "COs: CO1, CO2, CO3, CO4, CO5")
     h2(pdf, "11.1 Aim / Objective")
     body(
@@ -791,8 +808,7 @@ def build() -> Path:
     )
 
     # ===== RUBRIC =====
-    pdf.add_page()
-    h1(pdf, "12. Rubric Alignment")
+    section(pdf, "12. Rubric Alignment")
     body(pdf, "The table below states where each evaluation criterion is demonstrated in the project.")
     table(
         pdf,
@@ -815,11 +831,11 @@ def build() -> Path:
                 "File comments, docs/ reports, README and screenshot folders for assignments.",
             ],
         ],
-        [45, 125],
+        [45, 127],
     )
 
     # ===== CONCLUSION =====
-    h1(pdf, "13. Conclusion")
+    section(pdf, "13. Conclusion")
     body(
         pdf,
         "Assignments 1 to 10 were completed as a single React Native application built with the Community CLI and run on "
@@ -834,15 +850,14 @@ def build() -> Path:
         "in App.tsx updates the whole theme when the Switch is toggled. Stack navigation and FlatList complete the "
         "multi-screen, data-driven portfolio required for Assignments 7-10.",
     )
-    pdf.ln(4)
-    body(pdf, "Submitted by: Tanmay Shinde")
-    body(pdf, "Enrollment Number: ADT23SOCB1617")
-    pdf.ln(4)
-    h2(pdf, "References")
-    bullet(pdf, "React Native Documentation - https://reactnative.dev")
-    bullet(pdf, "React Navigation - https://reactnavigation.org")
-    bullet(pdf, "Android Developers - https://developer.android.com")
-    bullet(pdf, "Project repository - https://github.com/tanmays0/TanmayPortfolio")
+    pdf.ln(1)
+    body(pdf, "Submitted by: Tanmay Shinde  |  Enrollment Number: ADT23SOCB1617")
+    body(
+        pdf,
+        "References: React Native (https://reactnative.dev); React Navigation (https://reactnavigation.org); "
+        "Android Developers (https://developer.android.com); "
+        "github.com/tanmays0/TanmayPortfolio.",
+    )
 
     pdf.output(str(OUT))
     return OUT

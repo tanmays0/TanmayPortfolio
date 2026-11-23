@@ -1,4 +1,6 @@
-# Submission guide — Assignments 1–6
+# Submission guide — Assignments 1–6 (pack folder)
+
+College PDF reports for **1–6** and the full **1–10** lab report live in [`../submissions/`](../submissions/).
 
 Use this folder plus `docs/screenshots/` and the reports in `docs/` for college submission.
 

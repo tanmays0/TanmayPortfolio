@@ -1,7 +1,3 @@
-/**
- * Stack Navigator — Home, About, Skills, Projects, Contact (+ extras).
- * Custom MobileNavHeader on screens; native header hidden.
- */
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AboutScreen } from '../screens/AboutScreen';
 import { CertificationsScreen } from '../screens/CertificationsScreen';

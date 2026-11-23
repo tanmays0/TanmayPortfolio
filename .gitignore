@@ -90,5 +90,9 @@ docs/presentation/assets/
 docs/presentation/preview/
 docs/presentation/__pycache__/
 
+# Lab report build tooling
+docs/submissions/.venv/
+docs/submissions/__pycache__/
+
 # Ruby bundler (local)
 .bundle/

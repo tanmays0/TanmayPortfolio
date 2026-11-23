@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { PROFILE, PROFILE_IMAGE } from '../data/profile';
 
-/** Native profile.jpg is 893×1024 */
+/** Native profile.jpg is 869×1024 */
 const PHOTO_W = 893;
 const PHOTO_H = 1024;
 const PHOTO_ASPECT = PHOTO_W / PHOTO_H;

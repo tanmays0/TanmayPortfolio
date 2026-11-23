@@ -69,7 +69,12 @@ docs/           screenshots, coursework reports, presentation exports
 
 ## Coursework notes
 
-University MAD deliverables (comparison report, folder structure, assignment mapping, screenshots) live under [`docs/`](docs/). They are not required to run the app.
+University CPAD / MAD deliverables live under [`docs/`](docs/). Lab PDFs:
+
+- [`docs/submissions/Tanmay_Shinde_CPAD_Assignments_1-6_Report.pdf`](docs/submissions/Tanmay_Shinde_CPAD_Assignments_1-6_Report.pdf)
+- [`docs/submissions/Tanmay_Shinde_CPAD_Assignments_1-10_Lab_Report.pdf`](docs/submissions/Tanmay_Shinde_CPAD_Assignments_1-10_Lab_Report.pdf)
+
+They are not required to run the app.
 
 ## License
 
